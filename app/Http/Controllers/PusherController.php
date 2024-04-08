@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\PusherBroadcast;
 use Illuminate\Http\Request;
+use App\Events\PusherBroadcast;
 
 class PusherController extends Controller
 {

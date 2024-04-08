@@ -27,4 +27,6 @@ class PusherBroadcast implements ShouldBroadcast
     {
         return 'chat';
     }
+
+    
 }
