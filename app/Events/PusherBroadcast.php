@@ -2,14 +2,14 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\InteractsWithSockets;;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PusherBroadcast implements ShouldBroadcast
+class PusherBroadcast implements ShouldBroadcastNow
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $message;
 
@@ -18,15 +18,13 @@ class PusherBroadcast implements ShouldBroadcast
         $this->message = $message;
     }
 
-    public function broadcastOn() : array
+    public function broadcastOn(): array
     {
         return ['public'];
     }
 
-    public function broadcastAs() : string
+    public function broadcastAs(): string
     {
         return 'chat';
     }
-
-    
 }

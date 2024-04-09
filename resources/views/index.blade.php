@@ -9,8 +9,10 @@
     <link rel="stylesheet" href="/style.css">
 
 
-    <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- JavaScript -->
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <!-- End JavaScript -->
 
 
 </head>
@@ -144,50 +146,47 @@
 
     const channel = pusher.subscribe('public');
 
-    // Bind event after connection is established
-    pusher.connection.bind('connected', function() {
-        //pusher connection state
+    // Receive message
+    channel.bind('chat', function(data) {
+        console.log("Received message:", data); // Log received message
 
-
-        // Receive message
-        channel.bind('chat', function(data) {
-            console.log("Received message:", data); // Log received message
-
-            $.post("/receive", {
-                    _token: '{{ csrf_token() }}',
-                    message: data.message,
-                })
-                .done(function(res) {
-                    $(".messages > .message").last().after(res);
-                    $(document).scrollTop($(document).height());
-                }).fail(function(xhr, status, error) {
-                    console.log("Error processing message:",
-                        error); // Log any errors during message processing
-                });
-        });
-
-        // Attach submit event to the form
-        $("form").submit(function(e) {
-            e.preventDefault();
-
-            // Send AJAX request with the socket ID
-            $.ajax({
-                url: "/broadcast",
-                method: "POST",
-                headers: {
-                    'X-Socket-Id': pusher.connection.socket_id
-                },
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    message: $("form #message").val(),
-                }
-            }).done(function(res) {
+        $.post("/receive", {
+                _token: '{{ csrf_token() }}',
+                message: data.message,
+            })
+            .done(function(res) {
+                console.log(res);
                 $(".messages > .message").last().after(res);
-                $("form #message").val("");
                 $(document).scrollTop($(document).height());
             }).fail(function(xhr, status, error) {
-                console.log("AJAX Error:", error); // Log AJAX errors
+                console.log("Error processing message:",
+                    error); // Log any errors during message processing
             });
+    });
+
+    // Attach submit event to the form
+    $("form").submit(function(e) {
+        e.preventDefault();
+
+        // Send AJAX request with the socket ID
+        $.ajax({
+            url: "/broadcast",
+            method: "POST",
+            headers: {
+                'X-Socket-Id': pusher.connection.socket_id
+            },
+            data: {
+                _token: '{{ csrf_token() }}',
+                message: $("form #message").val(),
+            }
+        }).done(function(res) {
+            $(".messages > .message").last().after(res);
+
+            //print the value of res
+            $("form #message").val('');
+            $(document).scrollTop($(document).height());
+        }).fail(function(xhr, status, error) {
+            console.log("AJAX Error:", error); // Log AJAX errors
         });
     });
 </script>
